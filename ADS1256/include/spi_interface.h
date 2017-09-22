@@ -1,5 +1,5 @@
-#ifndef _ADS1256_H
-#define _ADS1256_H
+#ifndef _SPI_INTERFACE_H
+#define _SPI_INTERFACE_H
 /***********************************************************************
  * INCLUDES
  **/
@@ -34,6 +34,7 @@ typedef struct spi_config_t
 int spi_open(char *spi_device);
 int spi_close(int fd);
 int spi_transfer(int fd, void *tx_buf, void *rx_buf, uint32_t num_words);
+int spi_transfer_delay(int fd, void *tx_buf, void *rx_buf, uint32_t num_words, uint32_t delay_us);
 int spi_set_config(int fd, spi_config_t *p_spi_config);
 
 #endif

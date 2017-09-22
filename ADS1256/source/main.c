@@ -8,39 +8,19 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
+#include "conf.h"
+#include "gpio_interface.h"
 #include "spi_interface.h"
 #include "ads1256.h"
 
 /***********************************************************************
  * DEFINES
  **/
-/* Boolean */
-#ifndef TRUE
-  #define TRUE  1
-#endif
-#ifndef FALSE
-  #define FALSE 0
-#endif
 
-/* GPIO */
-#ifndef HIGH
-  #define HIGH  1
-#endif
-#ifndef LOW
-  #define LOW 0
-#endif
-
-/* SPI */
-#define SPI_CLOCK_FREQ_HZ   2000000
-#define SPI_CLOCK_MODE      0
-#define SPI_ENDIANNESS      MSB_FIRST
-#define SPI_CS_ACT_MODE     LOW
-#define SPI_BITS_PER_WORD   8
-
- 
 /***********************************************************************
  * GLOBALS
  **/
+volatile int  SPI_FD = 0;
 volatile bool FINISH = FALSE;
 
 /***********************************************************************
@@ -57,42 +37,45 @@ int init_spi(void);
  * MAIN
  **/
 /***********************************************************************
- * @fn
- * 
+ * @fn      main
+ *
  * @brief
- * 
+ *
  * @param
- * 
+ *
  * @return
  */
 int main(int argc, char *argv[])
 {
-  int spi_fd = 0;
-  
-  
   /* Install Signals */
   if ( install_signal(&signal_handler) < 0 )
   {
     exit(-1);
   }
-  
+
   /* Init SPI Bus */
-  spi_fd = init_spi();
-  if ( spi_fd < 0 )
+  SPI_FD = init_spi();
+  if ( SPI_FD < 0 )
   {
     exit(-1);
   }
 
+  /* Configure ADC */
+  ads1256_config();
+  ads1256_send_cmd(ADS1256_CMD_SDATAC);
+
   while ( FINISH != TRUE )
   {
+    int read = ads1256_read_channel(0);
+    double volt = read * 2 * 2.43 / 8388608.0;
 
-    sleep(1);
+    printf("AD Ch0: %d\t%f V\n", read, volt);
+    usleep(500000);
   }
-  
-  end:
+
   /* Close SPI */
-  spi_close(spi_fd);
-  
+  spi_close(SPI_FD);
+
   return 0;
 }
 
@@ -101,11 +84,11 @@ int main(int argc, char *argv[])
  **/
 /***********************************************************************
  * @fn      signal_handler
- * 
- * @brief   
- * 
+ *
+ * @brief
+ *
  * @param   signal
- * 
+ *
  * @return  void
  **/
 void signal_handler(int signal)
@@ -118,11 +101,11 @@ void signal_handler(int signal)
 
 /***********************************************************************
  * @fn      install_signal
- * 
- * @brief   
- * 
+ *
+ * @brief
+ *
  * @param   void
- * 
+ *
  * @return  void
  **/
 int install_signal(void *signal_handler)
@@ -142,11 +125,11 @@ int install_signal(void *signal_handler)
 
 /***********************************************************************
  * @fn      spi_init
- * 
- * @brief   
- * 
+ *
+ * @brief
+ *
  * @param   void
- * 
+ *
  * @return  void
  **/
 int init_spi(void)
@@ -157,7 +140,7 @@ int init_spi(void)
   {
     return -1;
   }
-  
+
   /* SPI Settings */
   spi_config_t spi_config;
   memset(&spi_config, 0, sizeof(spi_config_t));
@@ -166,13 +149,13 @@ int init_spi(void)
   spi_config.endianess      = SPI_ENDIANNESS;
   spi_config.bits_per_word  = SPI_BITS_PER_WORD;
   spi_config.cs_active_mode = SPI_CS_ACT_MODE;
-  
+
   if ( spi_set_config(fd, &spi_config) < 0 )
   {
     spi_close(fd);
-    
+
     return -1;
   }
-  
+
   return fd;
 }

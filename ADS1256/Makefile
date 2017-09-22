@@ -7,10 +7,10 @@ CFLAGS=-I$(INCLUDE_DIR)/ -Wall
 
 LIBS=-lpthread
 
-_OBJ=main.o ads1256.o spi_interface.o
+_OBJ=main.o ads1256.o spi_interface.o gpio_interface.o
 OBJ=$(patsubst %,$(OBJ_DIR)/%,$(_OBJ))
 
-_SOURCE=main.c ads1256.c spi_interface.c
+_SOURCE=main.c ads1256.c spi_interface.c gpio_interface.c
 SOURCE=$(patsubst %,$(SOURCE_DIR)/%,$(_SOURCE))
 
 TARGET=main
