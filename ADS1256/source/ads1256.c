@@ -54,12 +54,15 @@ int32_t ads1256_read_channel(uint8_t ch)
   uint32_t result = 0;
   uint8_t  rx_buf[3] = {0,0,0};
 
+  /* Select channel */
+  ads1256_set_channel(ch);
+
+  /* Send Sync Command */
+  ads1256_send_cmd(ADS1256_CMD_SYNC);
+
   /* Send Wake Up Command */
   ads1256_send_cmd(ADS1256_CMD_WAKEUP);
   ads1256_us_delay(50);
-
-  /* Wait for DRDY goes Low */
-  ads1256_wait_drdy();
 
   /* Select ADS1256 for SPI Communication */
   ads1256_set_cs(LOW);
@@ -122,7 +125,7 @@ void ads1256_config(void)
   const uint8_t status = ADS1256_MSB_FIRST | ADS1256_ACAL_DIS | ADS1256_BUF_DIS;
   const uint8_t mux    = ADS1256_POS_AIN0 | ADS1256_NEG_AINC;
   const uint8_t adcon  = ADS1256_CLKOUT_OFF | ADS1256_PGA_GAIN_1;
-  const uint8_t drate  = ADS1256_SMPS_30000;
+  const uint8_t drate  = ADS1256_SMPS_15000;
 
   uint8_t tx_buf[7];
 

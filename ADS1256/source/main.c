@@ -66,10 +66,13 @@ int main(int argc, char *argv[])
 
   while ( FINISH != TRUE )
   {
-    int read = ads1256_read_channel(0);
-    double volt = read * 2 * 2.43 / 8388608.0;
-
-    printf("AD Ch0: %d\t%f V\n", read, volt);
+    double volt[3] = {0,0,0};
+    int i = 0;
+    for ( i = 0; i < 3; i++ )
+    {
+      volt[i] = ads1256_read_channel(i) * 5.0 / 8388608.0;
+    }
+    printf("Ch0: %f V   Ch1: %f V   Ch2: %f\n", volt[0], volt[1], volt[2]);
     usleep(500000);
   }
 
