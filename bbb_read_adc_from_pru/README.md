@@ -1,42 +1,64 @@
-Descrição
---------------------------------------------------------------------------------------
+# BeagleBone ADC-PRU
+
 Exemplo de como controlar o conversor AD interno da BBB através da PRU.
 
 Realiza a leitura de um canal do conversor, a uma determinada taxa de amostragem, 
 durante um período de tempo especificado, e salva os dados da leitura em um arquivo txt.
 
-Compilar
---------------------------------------------------------------------------------------
+## Compilar
 
     $ make clean; make
 
-Executar
---------------------------------------------------------------------------------------
+## Executar
 
     # ./host_main <CHANNEL> <SAMPLE_RATE_HZ> <DURATION_SEC>
 
-Exemplo
---------------------------------------------------------------------------------------
+## Exemplo
 
 Canal: 0; Taxa de amostragem: 1000 Hz; Duração: 10 segundos
 
     # ./host_main 0 1000 10
 
-Parâmetros Aceitos
---------------------------------------------------------------------------------------
+## Parâmetros Aceitos
+
   - Canais: 0-6
   - Taxas de amostragem (Hz): 1600000,  800000, 400000, 200000, 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100
 
-Configurações
---------------------------------------------------------------------------------------
+# Observações gerais
+
+## Configurações do Sistema
+
 Esse programa foi desenvolvido e testado com as seguintes configurações:
  - Placa BeagleBone Black Rev C
  - Debian Strech 4.9.51-bone7 Debian Image 2017-09-17
  - Compilador GCC 6.3.0 20170516 (Debian 6.3.0-18)
  - Assembler PASM Version 0.87
  
-Observações gerais
---------------------------------------------------------------------------------------
+Verificar versão kernel:
+  
+    $ uname -a
+
+Para migrar para a mesma versão do kernel
+
+    $ sudo apt-get update
+    $ sudo apt-get install linux-image-4.9.51-bone7
+    $ sudo reboot
+
+Verificar se assembler está instalado:
+
+    $ pasm -v
+
+Para instalar o assembler PASM:
+
+    $ cd ~
+    $ git clone https://github.com/beagleboard/am335x_pru_package
+    $ cd am335x_pru_package/
+    $ make
+    $ sudo cp pru_sw/app_loader/include/*.h /usr/include
+    $ sudo cp pru_sw/app_loader/lib/* /usr/lib/
+    $ sudo cp pru_sw/utils/pasm /usr/bin/
+
+## UIO PRUSS
 
 Verificar se o módulo "uio_pruss" está carregado no sistema:
 
@@ -53,8 +75,8 @@ E descomentar a seguinte linha (remover, se houver, o # do começo da linha):
 
 Salve o arquivo, e reinicie o sistema.
 
-Pool RAM
---------------------------------------------------------------------------------------
+# Pool RAM
+
 Verificar endereço e tamanho da memória alocada (Pool RAM) para transferência de dados entre a PRU e Linux:
 
     $ cat /sys/devices/platform/ocp/4a300000.pruss/uio/uio0/maps/map1/addr
