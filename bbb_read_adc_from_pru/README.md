@@ -42,7 +42,7 @@ Verificar se o módulo "uio_pruss" está carregado no sistema:
 
     $ lsmod | grep uio_pruss
 
-Caso não esteja, editar o arquivo '/boot/uEnv.txt' e, em seguida, procurar e comentar as seguites linhas (inserir # no começo da linha):
+Caso não esteja, abrir o arquivo '/boot/uEnv.txt' como root e, em seguida, procurar e comentar as seguintes linhas (inserir # no começo da linha):
 
     uboot_overlay_pru=/lib/firmware/AM335X-PRU-RPROC-4-4-TI-00A0.dtbo
     enable_uboot_cape_universal=1
